@@ -17,38 +17,39 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * Created by Azunai on 29.11.14.
+ * Class for calculating optimal paths using some input information
+ * with Ant Colony Optimization algorithm
  */
 public class SolutionCalculation extends AntColonyOptimization {
     private static String xmlPathsFiles = "input_data_paths.xml";
     private static double constBestLength = 999999.0;
 
     public int[] actualIndexes;
-    public String[] filePaths;
+    public String[] filePaths;//Input and output files paths
 
     public SolutionCalculation(){
         filePaths = new String[3];
-        filePaths = readInputFilesPath();
-        double[][] matrix = readInputFiles(filePaths[1]);
-        double[][] parameters = readInputFiles(filePaths[0]);
+        filePaths = readInputAndOutputFilesPath();
+        double[][] matrix = readInputFile(filePaths[1]);
+        double[][] parameters = readInputFile(filePaths[0]);
 
         this.actualIndexes = new int[matrix[0].length];
         for(int i=0; i<matrix[0].length;i++)
             this.actualIndexes[i] = (int) matrix[0][i];
 
-        double[][] destinationArray = new double[matrix.length-1][matrix[1].length];
+        double[][] distancesArray = new double[matrix.length-1][matrix[1].length];
         for(int i=0; i<matrix.length-1;i++)
-            System.arraycopy(matrix[i + 1], 0, destinationArray[i], 0, matrix[1].length);
+            System.arraycopy(matrix[i + 1], 0, distancesArray[i], 0, matrix[1].length);
 
-        this.destinationArray = new Matrix(destinationArray);
-        this.townsNumber = destinationArray[0].length;
+        this.distancesArray = new Matrix(distancesArray);
+        this.townsNumber = distancesArray[0].length;
         this.antsNumber = (int)parameters[0][0];
         this.iterNumber = (long)parameters[0][1];
         this.parameterAlpha = parameters[0][2];
         this.parameterBeta = parameters[0][3];
         this.pheromonesEvaporation = parameters[0][4];
         this.eliteAntsNumber = (long)parameters[0][5];
-        this.visibility = divideMatrixElements(1.0, this.destinationArray);
+        this.visibility = divideMatrixElements(1.0, this.distancesArray);
         this.routeLengths = new Matrix(1, antsNumber);
         this.bestLength = constBestLength;
         this.bestRoute = new int[townsNumber + 1];
@@ -63,7 +64,27 @@ public class SolutionCalculation extends AntColonyOptimization {
         }
     }
 
-    public String[] readInputFilesPath(){
+    /**
+     * Match path indexes from AntColonyOptimization with real indexes
+     * @param indexes - indexes from AntColonyOptimization
+     * @return real indexes in the same sequence
+     */
+    public int[] matchIndexes(int[] indexes){
+        int[] result = new int[indexes.length];
+
+        for(int i=0; i<actualIndexes.length;i++)
+        {
+            result[i]=actualIndexes[indexes[i]];
+        }
+        result[result.length-1] = result[0];
+        return result;
+    }
+
+    /**
+     * Function for get input and output files path from xmlPathsFiles
+     * @return parameters, solution and transport_matrix files paths
+     */
+    public String[] readInputAndOutputFilesPath(){
         String[] inputFilesPath = new String[3];
         try{
 
@@ -73,13 +94,13 @@ public class SolutionCalculation extends AntColonyOptimization {
             Document doc = dBuilder.parse(xmlPathsFile);
             doc.getDocumentElement().normalize();
             NodeList nList = doc.getElementsByTagName("input_data");
-                Node nNode = nList.item(0);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    inputFilesPath[0] = eElement.getElementsByTagName("parameters").item(0).getTextContent();
-                    inputFilesPath[1] = eElement.getElementsByTagName("matrix").item(0).getTextContent();
-                    inputFilesPath[2] = eElement.getElementsByTagName("solution").item(0).getTextContent();
-                }
+            Node nNode = nList.item(0);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+                inputFilesPath[0] = eElement.getElementsByTagName("parameters").item(0).getTextContent();
+                inputFilesPath[1] = eElement.getElementsByTagName("matrix").item(0).getTextContent();
+                inputFilesPath[2] = eElement.getElementsByTagName("solution").item(0).getTextContent();
+            }
         }
         catch (FileNotFoundException e){
             e.printStackTrace();
@@ -96,7 +117,12 @@ public class SolutionCalculation extends AntColonyOptimization {
         return inputFilesPath;
     }
 
-    public double[][] readInputFiles(String filePath){
+    /**
+     * Read numeric data from input file
+     * @param filePath - file path
+     * @return 2D double array from file
+     */
+    public double[][] readInputFile(String filePath){
         double[][] res=null;
         try {
             FileReader csvFile = new FileReader(filePath);
@@ -117,17 +143,10 @@ public class SolutionCalculation extends AntColonyOptimization {
         return res;
     }
 
-    public int[] matchIndexes(int[] indexes){
-        int[] result = new int[indexes.length];
-
-        for(int i=0; i<actualIndexes.length;i++)
-        {
-            result[i]=actualIndexes[indexes[i]];
-        }
-        result[result.length-1] = result[0];
-        return result;
-    }
-
+    /**
+     * Write solution into file
+     * @param sb - string with solution with "," separator
+     */
     public void writeSolution(StringBuilder sb){
         try{
             CSVWriter csvWriter = new CSVWriter(new FileWriter(filePaths[2]),',');
