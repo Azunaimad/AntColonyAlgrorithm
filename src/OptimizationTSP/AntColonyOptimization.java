@@ -45,11 +45,6 @@ public class AntColonyOptimization extends Matrix implements Optimization {
      * @param antsNumber - number of ants
      * @param iterNumber - number of iteration
      * @param distancesArray - matrix with distances
-     * @param parameterAlpha
-     * @param parameterBeta
-     * @param pheromonesEvaporation
-     * @param eliteAntsNumber
-     * @param initialPheromonesDistribution
      */
     public AntColonyOptimization(int antsNumber, long iterNumber, double[][] distancesArray,
                                  double parameterAlpha, double parameterBeta,
