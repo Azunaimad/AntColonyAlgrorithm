@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<input_data>
+    <parameters>G:\Programnay ingeneriya\Project\parameters.csv</parameters>
+    <matrix>G:\Programnay ingeneriya\Project\transport_matrix.csv</matrix>
+	<solution>G:\Programnay ingeneriya\Project\solution.csv</solution>
+</input_data>
