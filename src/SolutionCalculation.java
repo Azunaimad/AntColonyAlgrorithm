@@ -49,7 +49,7 @@ public class SolutionCalculation extends AntColonyOptimization {
         this.parameterBeta = parameters[0][3];
         this.pheromonesEvaporation = parameters[0][4];
         this.eliteAntsNumber = (long)parameters[0][5];
-        this.visibility = divideMatrixElements(1.0, this.distancesArray);
+        this.visibility = inverseMatrixElements(this.distancesArray);
         this.routeLengths = new Matrix(1, antsNumber);
         this.bestLength = constBestLength;
         this.bestRoute = new int[townsNumber + 1];

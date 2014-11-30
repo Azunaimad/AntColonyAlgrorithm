@@ -70,7 +70,7 @@ public class AntColonyOptimization extends Matrix implements Optimization {
                 if (i != j)
                     this.pheromonesDistribution.setValue(i, j, initialPheromonesDistribution);
         }
-        this.visibility = divideMatrixElements(1.0, this.distancesArray);
+        this.visibility = inverseMatrixElements(this.distancesArray);
         routeLengths = new Matrix(1, antsNumber);
         bestLength = 999999.0;
         this.bestRoute = new int[townsNumber + 1];

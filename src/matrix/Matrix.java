@@ -71,7 +71,12 @@ public class Matrix {
         return matrix[0].length;
     }
 
-    public Matrix divideMatrixElements(double n, Matrix matrix){
+    /**
+     * Inverse matrix elements. Example: 2.0 -> 0.5
+     * @param matrix - - - matrix, which elements will be inversed
+     * @return matrix
+     */
+    public Matrix inverseMatrixElements(Matrix matrix){
         Matrix result = new Matrix(matrix.getNRows(),matrix.getNCols());
         for(int i=0; i<result.getNRows();i++)
             for(int j=0; j<result.getNCols();j++)
