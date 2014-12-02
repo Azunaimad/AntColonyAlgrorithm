@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
  * with Ant Colony Optimization algorithm
  */
 public class SolutionCalculation extends AntColonyOptimization {
-    private static String xmlPathsFiles = "input_data_paths.xml";
+    private static String xmlPathsFiles = "data_paths.xml";
     private static double constBestLength = 999999.0;
 
     public int[] actualIndexes;
@@ -93,7 +93,7 @@ public class SolutionCalculation extends AntColonyOptimization {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlPathsFile);
             doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("input_data");
+            NodeList nList = doc.getElementsByTagName("data");
             Node nNode = nList.item(0);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
